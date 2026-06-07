@@ -234,17 +234,24 @@ function Dashboard({ user, onLogout, isLoggingOut }) {
       const bookingReferenceId = generateBookingReferenceId()
       const generatedAt = new Date()
 
-      await addDoc(collection(db, APPOINTMENTS_COLLECTION), {
+      // Full payload saved to Firestore (not just the UI slip)
+      const appointmentData = {
         patientName: patientName.trim(),
         phone: phone.trim(),
         lmpDate,
+        pregnancyWeeks: weeksAtBooking,
+        recommendedScan: scanAtBooking?.title || '',
         appointmentDate,
         slot,
         status: 'waiting',
         bookingReferenceId,
         userId: user.uid,
         createdAt: serverTimestamp(),
-      })
+      }
+
+      console.log('Saving appointment:', appointmentData)
+
+      await addDoc(collection(db, APPOINTMENTS_COLLECTION), appointmentData)
 
       const slip = {
         bookingReferenceId,
